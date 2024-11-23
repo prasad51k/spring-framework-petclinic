@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: petclinic-deployment
+  labels:
+    app: petclinic
+spec:
+  replicas: 2  # Number of replicas
+  selector:
+    matchLabels:
+      app: petclinic
+  template:
+    metadata:
+      labels:
+        app: petclinic
+    spec:
+      tolerations:
+      - key: "set"
+        operator: "Equal"
+        value: "petclinic"
+        effect: "NoSchedule"
+      containers:
+      - name: petclinic
+        image: durga51/petclinic:latest
+        ports:
+        - containerPort: 8080  # Port exposed by the application
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: petclinic-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: petclinic
+  ports:
+  - protocol: TCP
+    port: 80        # External port to access the service
+    targetPort: 8080  # Internal port of the container
